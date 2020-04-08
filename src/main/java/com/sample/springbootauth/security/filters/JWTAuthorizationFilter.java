@@ -5,6 +5,8 @@ import com.auth0.jwt.algorithms.Algorithm;
 import com.auth0.jwt.interfaces.DecodedJWT;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import org.springframework.security.core.GrantedAuthority;
+import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.web.authentication.www.BasicAuthenticationFilter;
 
@@ -14,6 +16,7 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.List;
 import java.util.logging.Logger;
 
 import static com.sample.springbootauth.security.SecurityConstants.HTTP_AUTHORIZATION_HEADER;
@@ -42,7 +45,6 @@ public class JWTAuthorizationFilter extends BasicAuthenticationFilter {
     }
 
     UsernamePasswordAuthenticationToken authentication = getAuthentication(request);
-
     SecurityContextHolder.getContext().setAuthentication(authentication);
     chain.doFilter(request, response);
   }
@@ -60,12 +62,22 @@ public class JWTAuthorizationFilter extends BasicAuthenticationFilter {
         .verify(token.replace(TOKEN_PREFIX, ""));
 
       String uuid = decodedJWT.getClaim("uuid").asString();
+      List<String> scopes = decodedJWT.getClaim("scopes").asList(String.class);
+      List<GrantedAuthority> grantedAuthorities = getGrantedAuthorities(scopes);
+      logger.info(String.format("User %s has the following granted authorities: %s", uuid, grantedAuthorities));
 
       if (uuid != null) {
-        return new UsernamePasswordAuthenticationToken(uuid, null, new ArrayList<>()); // TODO what to put here as authenticated user when authorizing?
+        return new UsernamePasswordAuthenticationToken(uuid, null, grantedAuthorities); // TODO what to put here as authenticated user when authorizing?
       }
       return null;
     }
     return null;
   }
+
+  private List<GrantedAuthority> getGrantedAuthorities(List<String> privileges) {
+    List<GrantedAuthority> authorities = new ArrayList<>();
+    privileges.forEach(p -> authorities.add(new SimpleGrantedAuthority(p)));
+    return authorities;
+  }
+
 }
