@@ -41,3 +41,11 @@ curl -H "Content-Type: application/json" \
 # remember to replace xxx.yyy.zzz with the JWT retrieved above
 curl -H "Authorization: Bearer xxx.yyy.zzz" http://localhost:8080/tasks
 ```
+
+# References
+- https://www.baeldung.com/role-and-privilege-for-spring-security-registration
+- https://www.baeldung.com/spring-security-run-as-auth
+- https://www.baeldung.com/spring-security-method-security
+- https://www.baeldung.com/spring-security-expressions-basic
+- https://www.baeldung.com/spring-security-create-new-custom-security-expression
+- https://auth0.com/blog/implementing-jwt-authentication-on-spring-boot
