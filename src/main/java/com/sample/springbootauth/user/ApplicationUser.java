@@ -23,7 +23,6 @@ public class ApplicationUser implements UserDetails {
   private String uuid;
   private String type;
   private boolean isLocked;
-  private List<String> scopes;
 
   @Override
   public String getUsername() {
@@ -76,10 +75,6 @@ public class ApplicationUser implements UserDetails {
     this.uuid = uuid;
   }
 
-  public List<String> getScopes() {
-    return scopes;
-  }
-
   public String getType() {
     return type;
   }
@@ -96,7 +91,6 @@ public class ApplicationUser implements UserDetails {
       ", uuid='" + uuid + '\'' +
       ", type='" + type + '\'' +
       ", isLocked=" + isLocked +
-      ", scopes=" + scopes +
       '}';
   }
 }
