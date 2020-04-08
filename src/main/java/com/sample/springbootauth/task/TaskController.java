@@ -11,12 +11,13 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import java.util.List;
+import java.util.Optional;
 
 @RestController
 @RequestMapping("/tasks")
 public class TaskController {
 
-    private TaskRepository taskRepository;
+    private final TaskRepository taskRepository;
 
     public TaskController(TaskRepository taskRepository) {
         this.taskRepository = taskRepository;
@@ -34,10 +35,13 @@ public class TaskController {
 
     @PutMapping("/{id}")
     public void editTask(@PathVariable long id, @RequestBody Task task) {
-        Task existingTask = taskRepository.findById(id).get();
-        Assert.notNull(existingTask, "Task not found");
-        existingTask.setDescription(task.getDescription());
-        taskRepository.save(existingTask);
+        Optional<Task> optionalExistingTask = taskRepository.findById(id);
+
+        if(optionalExistingTask.isPresent()) {
+            Task existingTask = optionalExistingTask.get();
+            existingTask.setDescription(task.getDescription());
+            taskRepository.save(existingTask);
+        }
     }
 
     @DeleteMapping("/{id}")
